@@ -1,0 +1,116 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2017-2026 Yegor Bugayenko
+ * SPDX-License-Identifier: MIT
+ */
+package org.cactoos.set;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
+import org.llorllale.cactoos.matchers.HasSize;
+import org.llorllale.cactoos.matchers.HasValues;
+
+/**
+ * Test case for {@link Diff}.
+ *
+ * @since 0.58.0
+ */
+final class DiffTest {
+
+    /**
+     * Tests that set difference can be computed correctly.
+     */
+    @Test
+    void computesSetDifference() {
+        MatcherAssert.assertThat(
+            "Can't compute the difference of two sets",
+            new Diff<>(
+                new SetOf<>(1, 2, 3),
+                new SetOf<>(2, 3, 4)
+            ),
+            new HasValues<>(1)
+        );
+    }
+
+    /**
+     * Tests that set difference with empty second set returns the first set.
+     */
+    @Test
+    void computesSetDifferenceWithEmptySecondSet() {
+        MatcherAssert.assertThat(
+            "Can't compute the difference with empty second set",
+            new Diff<>(
+                new SetOf<>(1, 2, 3),
+                new SetOf<>()
+            ),
+            new HasValues<>(1, 2, 3)
+        );
+    }
+
+    /**
+     * Tests that set difference with empty first set returns empty set.
+     */
+    @Test
+    void computesSetDifferenceWithEmptyFirstSet() {
+        MatcherAssert.assertThat(
+            "Can't compute the difference with empty first set",
+            new Diff<>(
+                new SetOf<Integer>(),
+                new SetOf<>(1, 2, 3)
+            ),
+            new HasSize(0)
+        );
+    }
+
+    /**
+     * Tests that set difference works with java.util.Set.
+     */
+    @Test
+    void computesSetDifferenceWithJavaUtilSets() {
+        final Set<Integer> first = new HashSet<>();
+        first.add(1);
+        first.add(2);
+        first.add(3);
+        final Set<Integer> second = new HashSet<>();
+        second.add(3);
+        second.add(4);
+        second.add(5);
+        MatcherAssert.assertThat(
+            "Can't compute the difference of two java.util.Set",
+            new Diff<>(first, second),
+            new HasValues<>(1, 2)
+        );
+    }
+
+    /**
+     * Tests that set difference works with iterables.
+     */
+    @Test
+    void computesSetDifferenceWithIterables() {
+        MatcherAssert.assertThat(
+            "Can't compute the difference of two iterables",
+            new Diff<>(
+                Collections.singletonList(1),
+                Collections.singletonList(2)
+            ),
+            new HasValues<>(1)
+        );
+    }
+
+    /**
+     * Tests that set difference works with iterators.
+     */
+    @Test
+    void computesSetDifferenceWithIterators() {
+        MatcherAssert.assertThat(
+            "Can't compute the difference of two iterators",
+            new Diff<>(
+                new SetOf<>(1, 2, 3).iterator(),
+                new SetOf<>(3, 4, 5).iterator()
+            ),
+            new HasValues<>(1, 2)
+        );
+    }
+}

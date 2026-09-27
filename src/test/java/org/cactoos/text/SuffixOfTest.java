@@ -1,0 +1,56 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2017-2026 Yegor Bugayenko
+ * SPDX-License-Identifier: MIT
+ */
+package org.cactoos.text;
+
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
+import org.llorllale.cactoos.matchers.IsText;
+
+/**
+ * Test case for {@link SuffixOf}.
+ *
+ * @since 1.0
+ */
+final class SuffixOfTest {
+
+    /**
+     * Ensures that After is returning empty string if
+     * there is no given boundary.
+     */
+    @Test
+    void returnsEmptyIfThereIsNoBoundary() {
+        MatcherAssert.assertThat(
+            "Given string is not empty",
+            new SuffixOf("Cactoos with description", "after"),
+            new IsText("")
+        );
+    }
+
+    /**
+     * Ensures that After is returning empty string if
+     * given boundary is equal to given string.
+     */
+    @Test
+    void returnsEmptyIfStringIsBoundary() {
+        MatcherAssert.assertThat(
+            "Given string is not empty",
+            new SuffixOf("Boundary", "Boundary"),
+            new IsText("")
+        );
+    }
+
+    /**
+     * Ensures that After is returning string
+     * after given boundary.
+     */
+    @Test
+    void returnsAfterBoundaryString() {
+        MatcherAssert.assertThat(
+            "Given strings are not equal",
+            new SuffixOf("Anti-pattern", "Anti-"),
+            new IsText("pattern")
+        );
+    }
+}

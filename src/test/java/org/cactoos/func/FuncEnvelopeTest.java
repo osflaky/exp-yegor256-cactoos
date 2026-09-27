@@ -1,0 +1,36 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2017-2026 Yegor Bugayenko
+ * SPDX-License-Identifier: MIT
+ */
+package org.cactoos.func;
+
+import org.cactoos.Text;
+import org.cactoos.text.FormattedText;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
+import org.llorllale.cactoos.matchers.IsApplicable;
+import org.llorllale.cactoos.matchers.IsText;
+
+/**
+ * Test case for {@link FuncEnvelope}.
+ *
+ * @since 0.41
+ */
+final class FuncEnvelopeTest {
+
+    @Test
+    void envelopeDelegatesCalls() {
+        MatcherAssert.assertThat(
+            "must delegate calls to apply",
+            new FuncEnvelopeTest.Append(" stuff"),
+            new IsApplicable<>(2, new IsText("2 stuff"))
+        );
+    }
+
+    private static final class Append extends FuncEnvelope<Integer, Text> {
+
+        Append(final String suffix) {
+            super(input -> new FormattedText("%d%s", input, suffix));
+        }
+    }
+}

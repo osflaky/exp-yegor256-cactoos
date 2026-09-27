@@ -1,0 +1,158 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2017-2026 Yegor Bugayenko
+ * SPDX-License-Identifier: MIT
+ */
+package org.cactoos.scalar;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.cactoos.Proc;
+import org.cactoos.Scalar;
+import org.cactoos.iterable.IterableOf;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Test;
+import org.llorllale.cactoos.matchers.HasValue;
+
+/**
+ * Test case for {@link Or}.
+ *
+ * @since 0.8
+ */
+final class OrTest {
+
+    @Test
+    void allFalse() {
+        MatcherAssert.assertThat(
+            "value should be calculated for all false",
+            new Or(
+                new False(),
+                new False(),
+                new False(),
+                new False(),
+                new False()
+            ),
+            new HasValue<>(false)
+        );
+    }
+
+    @Test
+    void oneTrue() {
+        MatcherAssert.assertThat(
+            "value should be calculated for all false except one",
+            new Or(
+                new False(),
+                new True(),
+                new False(),
+                new False(),
+                new False()
+            ),
+            new HasValue<>(true)
+        );
+    }
+
+    @Test
+    void allTrue() {
+        MatcherAssert.assertThat(
+            "value should be calculated for all true",
+            new Or(
+                new IterableOf<Scalar<Boolean>>(
+                    new True(),
+                    new True(),
+                    new True(),
+                    new True(),
+                    new True()
+                )
+            ),
+            new HasValue<>(true)
+        );
+    }
+
+    @Test
+    void emptyIterator() {
+        MatcherAssert.assertThat(
+            "false should be a result for empty iterable",
+            new Or(new IterableOf<Scalar<Boolean>>()),
+            new HasValue<>(false)
+        );
+    }
+
+    @Test
+    void executesProcOnIterable() throws Exception {
+        final List<Integer> list = new ArrayList<>(4);
+        new Or(
+            (Proc<Integer>) list::add,
+            new IterableOf<>(1, 2, 3, 4)
+        ).value();
+        MatcherAssert.assertThat(
+            "proc iterable should collect list",
+            list,
+            Matchers.contains(1, 2, 3, 4)
+        );
+    }
+
+    @Test
+    void executesProcOnVarargs() throws Exception {
+        final List<Integer> list = new ArrayList<>(3);
+        new Or(
+            (Proc<Integer>) list::add,
+            2, 3, 4
+        ).value();
+        MatcherAssert.assertThat(
+            "proc iterable should collect list from varargs",
+            list,
+            Matchers.contains(2, 3, 4)
+        );
+    }
+
+    @Test
+    void appliesFuncToIterable() {
+        MatcherAssert.assertThat(
+            "function should be called for iterable",
+            new Or(
+                input -> input > 0,
+                new IterableOf<>(-1, 1, 0)
+            ),
+            new HasValue<>(true)
+        );
+    }
+
+    @Test
+    void appliesFuncToVarargs() {
+        MatcherAssert.assertThat(
+            "function should be called for varargs",
+            new Or(
+                input -> input > 0,
+                -1, -2, 0
+            ),
+            new HasValue<>(false)
+        );
+    }
+
+    @Test
+    void evaluatesMultipleFuncTrueCondition() {
+        MatcherAssert.assertThat(
+            "Can't compare subject with true conditions",
+            new Or(
+                3,
+                input -> input > 0,
+                input -> input > 5,
+                input -> input > 4
+            ),
+            new HasValue<>(true)
+        );
+    }
+
+    @Test
+    void evaluatesMultipleFuncFalseCondition() {
+        MatcherAssert.assertThat(
+            "Can't compare subject with false conditions",
+            new Or(
+                "cactoos",
+                input -> input.contains("singleton"),
+                input -> input.contains("static")
+            ),
+            new HasValue<>(false)
+        );
+    }
+}

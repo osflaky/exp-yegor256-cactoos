@@ -1,0 +1,105 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2017-2026 Yegor Bugayenko
+ * SPDX-License-Identifier: MIT
+ */
+package org.cactoos.proc;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicReference;
+import org.cactoos.scalar.ScalarOf;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
+import org.llorllale.cactoos.matchers.Satisfies;
+
+/**
+ * Test case for {@link RunnableOf}.
+ *
+ * @since 0.2
+ */
+final class RunnableOfTest {
+
+    @Test
+    void convertsProcIntoRunnable() {
+        final AtomicReference<Object> done = new AtomicReference<>();
+        final Object obj = new Object();
+        MatcherAssert.assertThat(
+            "Must execute Runnable with Proc",
+            new RunnableOf(
+                new ProcOf<>(
+                    done::set
+                ),
+                obj
+            ),
+            new Satisfies<>(
+                runnable -> {
+                    runnable.run();
+                    return done.get().equals(obj);
+                }
+            )
+        );
+    }
+
+    @Test
+    void convertsScalarIntoRunnable() {
+        final AtomicReference<Object> done = new AtomicReference<>();
+        final Object obj = new Object();
+        MatcherAssert.assertThat(
+            "Must execute Runnable with Scalar",
+            new RunnableOf(
+                new ScalarOf<>(
+                    () -> {
+                        done.set(obj);
+                        return "discarded";
+                    }
+                )
+            ),
+            new Satisfies<>(
+                runnable -> {
+                    runnable.run();
+                    return done.get().equals(obj);
+                }
+            )
+        );
+    }
+
+    @Test
+    void convertsLambdaIntoRunnable() {
+        final AtomicReference<Object> done = new AtomicReference<>();
+        final Object obj = new Object();
+        MatcherAssert.assertThat(
+            "Must execute Runnable with Lambda",
+            new RunnableOf(
+                () -> {
+                    done.set(obj);
+                }
+            ),
+            new Satisfies<>(
+                runnable -> {
+                    runnable.run();
+                    return done.get().equals(obj);
+                }
+            )
+        );
+    }
+
+    @Test
+    void convertsCallableIntoRunnable() {
+        final AtomicReference<Object> done = new AtomicReference<>();
+        final Object obj = new Object();
+        MatcherAssert.assertThat(
+            "Must execute Runnable with Callable",
+            new RunnableOf(
+                (Callable<Void>) () -> {
+                    done.set(obj);
+                    return null;
+                }
+            ),
+            new Satisfies<>(
+                runnable -> {
+                    runnable.run();
+                    return done.get().equals(obj);
+                }
+            )
+        );
+    }
+}

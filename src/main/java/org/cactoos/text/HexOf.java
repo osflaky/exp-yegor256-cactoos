@@ -1,0 +1,49 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2017-2026 Yegor Bugayenko
+ * SPDX-License-Identifier: MIT
+ */
+package org.cactoos.text;
+
+import org.cactoos.Bytes;
+
+/**
+ * Hexadecimal representation of Bytes.
+ *
+ * <p>There is no thread-safety guarantee.</p>
+ *
+ * @since 0.28
+ */
+public final class HexOf extends TextEnvelope {
+
+    /**
+     * The hexadecimal chars.
+     */
+    private static final char[] HEX_CHARS = {
+        '0', '1', '2', '3', '4', '5', '6', '7',
+        '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
+    };
+
+    /**
+     * Ctor.
+     *
+     * @param bytes The bytes
+     */
+    public HexOf(final Bytes bytes) {
+        super(
+            new TextOf(
+                () -> {
+                    final byte[] bts = bytes.asBytes();
+                    final char[] hex = new char[bts.length * 2];
+                    int chr = 0;
+                    for (final byte currentbyte : bts) {
+                        final int value = 0xFF & currentbyte;
+                        hex[chr] = HexOf.HEX_CHARS[value >>> 4];
+                        hex[chr + 1] = HexOf.HEX_CHARS[value & 0x0F];
+                        chr += 2;
+                    }
+                    return new String(hex);
+                }
+            )
+        );
+    }
+}

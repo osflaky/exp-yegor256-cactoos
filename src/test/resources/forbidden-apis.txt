@@ -1,0 +1,6 @@
+@defaultMessage Do not use static methods, please use cactoos-matchers Assertion instead
+org.hamcrest.Matchers
+org.junit.jupiter.api.Assertions
+
+@defaultMessage Please avoid using static methods.
+java.util.Collections#unmodifiableList(java.util.List)

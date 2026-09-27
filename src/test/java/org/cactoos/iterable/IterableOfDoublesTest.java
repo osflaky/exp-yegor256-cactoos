@@ -1,0 +1,27 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2017-2026 Yegor Bugayenko
+ * SPDX-License-Identifier: MIT
+ */
+package org.cactoos.iterable;
+
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
+import org.llorllale.cactoos.matchers.HasValues;
+
+/**
+ * Test case for {@link IterableOfDoubles}.
+ *
+ * @since 1.0
+ */
+final class IterableOfDoublesTest {
+
+    @Test
+    void convertsDoubleValuesToIterable() {
+        final double[] values = {1.0, 2.0, 3.0};
+        MatcherAssert.assertThat(
+            "Must convert double values to iterable",
+            new IterableOfDoubles(values),
+            new HasValues<>(values[0], values[1], values[2])
+        );
+    }
+}

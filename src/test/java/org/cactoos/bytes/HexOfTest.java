@@ -1,0 +1,73 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2017-2026 Yegor Bugayenko
+ * SPDX-License-Identifier: MIT
+ */
+
+package org.cactoos.bytes;
+
+import java.io.IOException;
+import org.cactoos.text.TextOf;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.core.IsEqual;
+import org.junit.jupiter.api.Test;
+import org.llorllale.cactoos.matchers.Satisfies;
+import org.llorllale.cactoos.matchers.Throws;
+
+/**
+ * Test case for {@link HexOf}.
+ *
+ * @since 0.29
+ */
+final class HexOfTest {
+
+    @Test
+    void emptyText() throws Exception {
+        MatcherAssert.assertThat(
+            "Must represent an empty hexadecimal text",
+            new HexOf(new TextOf("")).asBytes(),
+            new Satisfies<>(array -> array.length == 0)
+        );
+    }
+
+    @Test
+    void validHex() throws Exception {
+        final byte[] bytes = new byte[256];
+        for (int index = 0; index < 256; ++index) {
+            bytes[index] = (byte) (index + Byte.MIN_VALUE);
+        }
+        MatcherAssert.assertThat(
+            "Must convert hexadecimal text to bytes",
+            new HexOf(
+                // @checkstyle FullyQualifiedTypeCheck (1 line)
+                new org.cactoos.text.HexOf(
+                    new BytesOf(bytes)
+                )
+            ).asBytes(),
+            new IsEqual<>(bytes)
+        );
+    }
+
+    @Test
+    void invalidHexLength() {
+        MatcherAssert.assertThat(
+            "Must invalid hex length",
+            () -> new HexOf(new TextOf("ABF")).asBytes(),
+            new Throws<>(
+                "Length of hexadecimal text is odd",
+                IOException.class
+            )
+        );
+    }
+
+    @Test
+    void invalidHex() {
+        MatcherAssert.assertThat(
+            "Must invalid hex",
+            () -> new HexOf(new TextOf("ABG!")).asBytes(),
+            new Throws<>(
+                "Unexpected character 'G'",
+                IOException.class
+            )
+        );
+    }
+}

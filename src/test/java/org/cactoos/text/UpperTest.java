@@ -1,0 +1,35 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2017-2026 Yegor Bugayenko
+ * SPDX-License-Identifier: MIT
+ */
+package org.cactoos.text;
+
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
+import org.llorllale.cactoos.matchers.HasString;
+
+/**
+ * Test case for {@link Upper}.
+ *
+ * @since 0.1
+ */
+final class UpperTest {
+
+    @Test
+    void convertsText() {
+        MatcherAssert.assertThat(
+            "Can't upper case a text",
+            new Upper(new TextOf("Hello!")),
+            new HasString("HELLO!")
+        );
+    }
+
+    @Test
+    void convertsString() {
+        MatcherAssert.assertThat(
+            "Can't upper case a string",
+            new Upper("World!"),
+            new HasString("WORLD!")
+        );
+    }
+}

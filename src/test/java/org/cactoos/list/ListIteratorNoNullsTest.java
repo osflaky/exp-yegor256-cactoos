@@ -1,0 +1,151 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2017-2026 Yegor Bugayenko
+ * SPDX-License-Identifier: MIT
+ */
+package org.cactoos.list;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
+import org.llorllale.cactoos.matchers.HasValue;
+import org.llorllale.cactoos.matchers.Throws;
+
+/**
+ * Test cases for {@link ListIteratorNoNulls}.
+ *
+ * @since 0.35
+ */
+final class ListIteratorNoNullsTest {
+
+    @Test
+    void mustThrowsErrorIfListIteratorNextValueIsNull() {
+        MatcherAssert.assertThat(
+            "must throw error next item is null",
+            () -> {
+                new ListIteratorNoNulls<>(
+                    new ListOf<>(null, 2, 3).listIterator()
+                ).next();
+                return 0;
+            },
+            new Throws<>(
+                "Next item is NULL",
+                IllegalStateException.class
+            )
+        );
+    }
+
+    @Test
+    void mustThrowsErrorIfListIteratorPreviousValueIsNull() {
+        MatcherAssert.assertThat(
+            "must throw error if previous value is null",
+            () -> {
+                new ListIteratorNoNulls<>(
+                    new ListOf<>(
+                        null, 2, 3
+                    ).listIterator(1)
+                ).previous();
+                return 0;
+            },
+            new Throws<>(
+                "Previous item is NULL",
+                IllegalStateException.class
+            )
+        );
+    }
+
+    @Test
+    void mustAddToListIterator() {
+        MatcherAssert.assertThat(
+            "must add to list iterator",
+            () -> {
+                final List<Integer> list = new ArrayList<>(2);
+                list.add(1);
+                list.add(2);
+                final ListIterator<Integer> iterator = new ListIteratorNoNulls<>(
+                    list.listIterator()
+                );
+                iterator.next();
+                iterator.add(4);
+                return iterator.previous();
+            },
+            new HasValue<>(4)
+        );
+    }
+
+    @Test
+    void mustRemoveFromListIterator() {
+        MatcherAssert.assertThat(
+            "must remove element from list iterator",
+            () -> {
+                final List<Integer> list = new ArrayList<>(2);
+                list.add(1);
+                list.add(2);
+                final ListIterator<Integer> iterator = new ListIteratorNoNulls<>(
+                    list.listIterator()
+                );
+                iterator.next();
+                iterator.remove();
+                return iterator.previous();
+            },
+            new Throws<>(
+                NoSuchElementException.class
+            )
+        );
+    }
+
+    @Test
+    void mustSetValueListIterator() {
+        MatcherAssert.assertThat(
+            "must set element into list iterator",
+            () -> {
+                final List<Integer> list = new ArrayList<>(2);
+                list.add(1);
+                list.add(2);
+                final ListIterator<Integer> iterator = new ListIteratorNoNulls<>(
+                    list.listIterator()
+                );
+                iterator.next();
+                iterator.set(4);
+                return iterator.previous();
+            },
+            new HasValue<>(4)
+        );
+    }
+
+    @Test
+    void mustThrowsErrorIfAddANullItem() {
+        MatcherAssert.assertThat(
+            "must throw error if add a null item",
+            () -> {
+                new ListIteratorNoNulls<>(
+                    new ListOf<>(1, 2, 3).listIterator()
+                ).add(null);
+                return 0;
+            },
+            new Throws<>(
+                "Item can't be NULL in #add(T)",
+                IllegalArgumentException.class
+            )
+        );
+    }
+
+    @Test
+    void mustThrowsErrorIfSetANullItem() {
+        MatcherAssert.assertThat(
+            "must throw error if set a null item",
+            () -> {
+                new ListIteratorNoNulls<>(
+                    new ListOf<>(1, 2, 3).listIterator()
+                ).set(null);
+                return 0;
+            },
+            new Throws<>(
+                "Item can't be NULL in #set(T)",
+                IllegalArgumentException.class
+            )
+        );
+    }
+}

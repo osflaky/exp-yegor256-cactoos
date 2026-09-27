@@ -1,0 +1,26 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2017-2026 Yegor Bugayenko
+ * SPDX-License-Identifier: MIT
+ */
+package org.cactoos.text;
+
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
+import org.llorllale.cactoos.matchers.HasString;
+
+/**
+ * Test case for {@link Normalized}.
+ *
+ * @since 0.9
+ */
+final class NormalizedTest {
+
+    @Test
+    void normalizesText() {
+        MatcherAssert.assertThat(
+            "Can't normalize a text",
+            new Normalized(" \t hello  \t\tworld   \t"),
+            new HasString("hello world")
+        );
+    }
+}

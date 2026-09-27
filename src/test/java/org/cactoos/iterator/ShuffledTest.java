@@ -1,0 +1,55 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2017-2026 Yegor Bugayenko
+ * SPDX-License-Identifier: MIT
+ */
+package org.cactoos.iterator;
+
+import java.util.Random;
+import org.cactoos.iterable.IterableOf;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.core.IsEqual;
+import org.junit.jupiter.api.Test;
+import org.llorllale.cactoos.matchers.HasValues;
+
+/**
+ * Test Case for {@link Shuffled}.
+ *
+ * @since 0.20
+ */
+final class ShuffledTest {
+
+    @Test
+    void shuffleIterable() {
+        MatcherAssert.assertThat(
+            "Must shuffle elements in iterator",
+            new IterableOf<>(
+                new Shuffled<>(
+                    new IteratorOf<>(
+                        "a", "b"
+                    )
+                )
+            ),
+            new HasValues<>(
+                "a", "b"
+            )
+        );
+    }
+
+    @Test
+    void shuffleIterableWithRandomized() {
+        MatcherAssert.assertThat(
+            "Must shuffle elements with randomizer",
+            new IterableOf<>(
+                () -> new Shuffled<>(
+                    new Random(0L),
+                    new IteratorOf<>(
+                        "C", "B", "A"
+                    )
+                )
+            ),
+            new IsEqual<>(
+                new IterableOf<>("A", "B", "C")
+            )
+        );
+    }
+}

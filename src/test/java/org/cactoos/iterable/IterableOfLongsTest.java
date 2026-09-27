@@ -1,0 +1,27 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2017-2026 Yegor Bugayenko
+ * SPDX-License-Identifier: MIT
+ */
+package org.cactoos.iterable;
+
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
+import org.llorllale.cactoos.matchers.HasValues;
+
+/**
+ * Test case for {@link IterableOfLongs}.
+ *
+ * @since 1.0
+ */
+final class IterableOfLongsTest {
+
+    @Test
+    void convertsLongValuesToIterable() {
+        final long[] values = {1L, 2L, 3L};
+        MatcherAssert.assertThat(
+            "Must convert long values to iterable",
+            new IterableOfLongs(values),
+            new HasValues<>(values[0], values[1], values[2])
+        );
+    }
+}

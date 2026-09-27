@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: Copyright (c) 2017-2026 Yegor Bugayenko
+# SPDX-License-Identifier: MIT
+---
+errors:
+  - yegor256@gmail.com
+# alerts:
+#   github:
+#     - yegor256
+
+tags:
+  - pdd
+  - bug
+
+tickets:
+  - inherit-milestone

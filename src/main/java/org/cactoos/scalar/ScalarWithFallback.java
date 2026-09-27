@@ -1,0 +1,117 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2017-2026 Yegor Bugayenko
+ * SPDX-License-Identifier: MIT
+ */
+package org.cactoos.scalar;
+
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Map;
+import org.cactoos.Fallback;
+import org.cactoos.Scalar;
+import org.cactoos.func.Flattened;
+import org.cactoos.func.FuncWithFallback;
+import org.cactoos.iterable.IterableOf;
+import org.cactoos.iterator.Filtered;
+import org.cactoos.iterator.Sorted;
+import org.cactoos.map.MapOf;
+
+/**
+ * Scalar with fallbacks that enable it to recover from errors.
+ *
+ * <p>There is no thread-safety guarantee.</p>
+ *
+ * @param <T> Type of result
+ * @see FuncWithFallback
+ * @since 0.31
+ */
+@SuppressWarnings("PMD.AvoidCatchingGenericException")
+public final class ScalarWithFallback<T> implements Scalar<T> {
+
+    /**
+     * The origin scalar.
+     */
+    private final Scalar<? extends T> origin;
+
+    /**
+     * The fallback.
+     */
+    private final Iterable<? extends Fallback<? extends T>> fallbacks;
+
+    /**
+     * Ctor.
+     *
+     * @param origin Original scalar
+     * @param fbks The fallbacks
+     */
+    @SafeVarargs
+    public ScalarWithFallback(
+        final Scalar<? extends T> origin,
+        final Fallback<? extends T>... fbks
+    ) {
+        this(origin, new IterableOf<>(fbks));
+    }
+
+    /**
+     * Ctor.
+     *
+     * @param origin Original scalar
+     * @param fbks Fallbacks
+     */
+    public ScalarWithFallback(final Scalar<? extends T> origin,
+        final Iterable<? extends Fallback<? extends T>> fbks) {
+        this.origin = origin;
+        this.fallbacks = fbks;
+    }
+
+    @Override
+        public T value() throws Exception {
+        T result;
+        try {
+            result = this.origin.value();
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            result = this.fallback(ex);
+            // @checkstyle IllegalCatchCheck (1 line)
+        } catch (final Throwable ex) {
+            result = this.fallback(ex);
+        }
+        return result;
+    }
+
+    @SuppressWarnings("PMD.AvoidThrowingRawExceptionTypes")
+    private T fallback(final Throwable exp) throws Exception {
+        final Iterator<? extends Map.Entry<Fallback<? extends T>, Integer>> candidates =
+            new Sorted<>(
+                Comparator.comparing(Map.Entry::getValue),
+                new Filtered<>(
+                    new Flattened<>(
+                        entry -> new Not(
+                            new Equals<Integer, Integer>(
+                                entry::getValue,
+                                new Constant<>(Integer.MIN_VALUE)
+                            )
+                        )
+                    ),
+                    new MapOf<Fallback<? extends T>, Integer>(
+                        fbk -> fbk,
+                        fbk -> fbk.support(exp),
+                        this.fallbacks
+                    ).entrySet().iterator()
+                )
+            );
+        if (!candidates.hasNext()) {
+            if (exp instanceof RuntimeException runtime) {
+                throw runtime;
+            }
+            if (exp instanceof Error error) {
+                throw error;
+            }
+            if (exp instanceof Exception exception) {
+                throw exception;
+            }
+            throw new Exception(exp);
+        }
+        return candidates.next().getKey().apply(exp);
+    }
+}

@@ -1,0 +1,51 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2017-2026 Yegor Bugayenko
+ * SPDX-License-Identifier: MIT
+ */
+package org.cactoos.iterable;
+
+import java.nio.charset.StandardCharsets;
+import org.cactoos.text.TextOf;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
+import org.llorllale.cactoos.matchers.HasValues;
+
+/**
+ * Test case for {@link IterableOfBytes}.
+ *
+ * @since 1.0
+ */
+final class IterableOfBytesTest {
+
+    @Test
+    void convertsTextToIterableOfBytes() {
+        MatcherAssert.assertThat(
+            "Must create Iterable from Text",
+            new IterableOfBytes(
+                new TextOf("ABC")
+            ),
+            new HasValues<>(
+                (byte) 'A', (byte) 'B', (byte) 'C'
+            )
+        );
+    }
+
+    @Test
+    void convertsBytesToIterable() {
+        final byte[] bytes = "txt".getBytes(StandardCharsets.UTF_8);
+        MatcherAssert.assertThat(
+            "Must create Iterable from bytes",
+            new IterableOfBytes(bytes),
+            new HasValues<>(bytes[0], bytes[1], bytes[2])
+        );
+    }
+
+    @Test
+    void convertsStringToIterableOfBytes() {
+        MatcherAssert.assertThat(
+            "Must create Iterable from String",
+            new IterableOfBytes("TEST"),
+            new HasValues<>((byte) 'T', (byte) 'E', (byte) 'S', (byte) 'T')
+        );
+    }
+}

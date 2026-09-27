@@ -1,0 +1,31 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2017-2026 Yegor Bugayenko
+ * SPDX-License-Identifier: MIT
+ */
+package org.cactoos.io;
+
+import java.io.IOException;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
+import org.llorllale.cactoos.matchers.Throws;
+
+/**
+ * Test case for {@link UncheckedOutput}.
+ *
+ * @since 0.11
+ */
+final class UncheckedOutputTest {
+
+    @Test
+    void rethrowsCheckedToUncheckedException() {
+        MatcherAssert.assertThat(
+            "Exception is not rethrown as runtime",
+            () -> new UncheckedOutput(
+                () -> {
+                    throw new IOException("intended");
+                }
+            ).stream(),
+            new Throws<>(RuntimeException.class)
+        );
+    }
+}

@@ -1,0 +1,30 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2017-2026 Yegor Bugayenko
+ * SPDX-License-Identifier: MIT
+ */
+package org.cactoos.io;
+
+import java.io.OutputStream;
+import org.cactoos.Output;
+
+/**
+ * Output that writes to {@code stderr}.
+ *
+ * <p>There is no thread-safety guarantee.</p>
+ *
+ * @since 0.6
+ */
+public final class Stderr implements Output {
+
+    /**
+     * Ctor.
+     */
+    public Stderr() {
+        // nothing to init
+    }
+
+    @Override
+    public OutputStream stream() {
+        return System.err;
+    }
+}

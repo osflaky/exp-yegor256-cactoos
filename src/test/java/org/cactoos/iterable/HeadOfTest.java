@@ -1,0 +1,45 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2017-2026 Yegor Bugayenko
+ * SPDX-License-Identifier: MIT
+ */
+package org.cactoos.iterable;
+
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Test;
+import org.llorllale.cactoos.matchers.HasValues;
+
+/**
+ * Test Case for {@link HeadOf}.
+ *
+ * @since 0.8
+ */
+final class HeadOfTest {
+
+    @Test
+        void headIterable() {
+        MatcherAssert.assertThat(
+            "Must skip elements in iterable",
+            new HeadOf<>(
+                2, new IterableOf<>(
+                    "one", "two", "three", "four"
+                )
+            ),
+            new HasValues<>(
+                "one",
+                "two"
+            )
+        );
+    }
+
+    @Test
+    void varargsConstructorTest() {
+        MatcherAssert.assertThat(
+            "Must skip elements from varargs",
+            new HeadOf<>(
+                2,
+                1, 2, 3, 4
+            ),
+            new HasValues<>(1, 2)
+        );
+    }
+}
